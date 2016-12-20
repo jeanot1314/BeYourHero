@@ -1,0 +1,12 @@
+# Blender MTL File: 'pi_Porl_Hand_Left.blend'
+# Material Count: 1
+
+newmtl Skin
+Ns 13.725490
+Ka 1.000000 1.000000 1.000000
+Kd 0.953836 0.726551 0.559590
+Ks 0.245856 0.199199 0.165545
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

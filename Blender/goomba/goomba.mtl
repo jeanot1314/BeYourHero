@@ -1,0 +1,28 @@
+# Blender MTL File: 'None'
+# Material Count: 2
+
+newmtl kuribo_all
+Ns 96.078431
+Ka 0.501961 0.501961 0.501961
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd kuribo_all.png
+map_Ka kuribo_all.png
+map_d kuribo_all.png
+
+newmtl kuribo_eye
+Ns 96.078431
+Ka 0.501961 0.501961 0.501961
+Kd 0.972549 0.972549 0.972549
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd kuribo_eye.png
+map_Ka kuribo_eye.png
+map_d kuribo_eye.png

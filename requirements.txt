@@ -1,0 +1,6 @@
+pyserial
+numpy==1.11.0
+Pillow
+pi3d==2.15
+git+https://github.com/WayneKeenan/python-vrzero
+

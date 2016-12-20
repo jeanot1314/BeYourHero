@@ -1,0 +1,35 @@
+# Blender MTL File: 'Link_handR.blend'
+# Material Count: 3
+
+newmtl gloveA
+Ns 3.921569
+Ka 0.600000 0.600000 0.600000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd textures/gloveA.png
+
+newmtl gloveB
+Ns 3.921569
+Ka 0.600000 0.600000 0.600000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd textures/gloveB.png
+
+newmtl hand
+Ns 3.921569
+Ka 0.600000 0.600000 0.600000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd textures/hand.png
