@@ -1,5 +1,49 @@
 # Blender MTL File: 'Link_forarmR.blend'
-# Material Count: 3
+# Material Count: 7
+
+newmtl Mesh_0078_rip.001
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Tex_0078_0.png
+
+newmtl Mesh_0079_rip.001
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Tex_0078_0.png
+
+newmtl Mesh_0080_rip.001
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Tex_0080_0.png
+
+newmtl Mesh_0081_rip.001
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Tex_0078_0.png
 
 newmtl arm_grove
 Ns 3.921569
@@ -10,7 +54,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/arm_grove.png
+map_Kd arm_grove.png
 
 newmtl footA
 Ns 3.921569
@@ -21,7 +65,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/footA.png
+map_Kd footA.png
 
 newmtl gloveB
 Ns 3.921569
@@ -32,4 +76,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/gloveB.png
+map_Kd gloveB.png

@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/innerA.png
+map_Kd innerA.png
 
 newmtl kata
 Ns 3.921569
@@ -21,7 +21,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/kata.png
+map_Kd kata.png
 
 newmtl muneA
 Ns 3.921569
@@ -32,7 +32,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/muneA.png
+map_Kd muneA.png
 
 newmtl neck_inner
 Ns 3.921569
@@ -43,4 +43,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/neck_inner.png
+map_Kd neck_inner.png

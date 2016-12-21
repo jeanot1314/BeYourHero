@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/ear.png
+map_Kd ear.png
 
 newmtl eye
 Ns 3.921569
@@ -21,7 +21,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/eye.png
+map_Kd eye.png
 
 newmtl hair
 Ns 3.921569
@@ -32,7 +32,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/hair.png
+map_Kd hair.png
 
 newmtl hatshade
 Ns 3.921569
@@ -43,7 +43,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/hatshade.png
+map_Kd hatshade.png
 
 newmtl ling
 Ns 3.921569
@@ -54,7 +54,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/ling.png
+map_Kd ling.png
 
 newmtl mouth1
 Ns 3.921569
@@ -65,7 +65,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/mouth1.png
+map_Kd mouth1.png
 
 newmtl nose
 Ns 3.921569
@@ -76,7 +76,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/nose.png
+map_Kd nose.png
 
 newmtl nose2
 Ns 3.921569
@@ -87,4 +87,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/nose2.png
+map_Kd nose2.png

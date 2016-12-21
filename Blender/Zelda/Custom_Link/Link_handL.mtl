@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/Tex_0039_0.png
+map_Kd Tex_0039_0.png
 
 newmtl Mesh_0042_rip.002
 Ns 9.803922
@@ -21,7 +21,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/Tex_0041_0.png
+map_Kd Tex_0041_0.png
 
 newmtl Mesh_0043_rip.002
 Ns 9.803922
@@ -32,7 +32,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/Tex_0042_0.png
+map_Kd Tex_0042_0.png
 
 newmtl gloveA
 Ns 3.921569
@@ -43,7 +43,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/gloveA.png
+map_Kd gloveA.png
 
 newmtl gloveB
 Ns 3.921569
@@ -54,7 +54,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/gloveB.png
+map_Kd gloveB.png
 
 newmtl hand
 Ns 3.921569
@@ -65,4 +65,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/hand.png
+map_Kd hand.png

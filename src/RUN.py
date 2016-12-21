@@ -26,6 +26,7 @@ MAP_HALL = True
 
 if(USE_STEREO):
   engine.show_stats=SHOW_STAT
+  engine.debug = True
   engine.use_simple_display=not USE_TUNNEL
   engine._avatar_eye_height = DEFAULT_AVATAR_EYE_HEIGHT
   engine._avatar_movement_speed = DEFAULT_AVATAR_MOVEMENT_SPEED
@@ -41,6 +42,7 @@ if(USE_STEREO):
 # Setup display and initialise pi3d
 if(USE_STEREO == False):
   DISPLAY = pi3d.Display.create()
+  #DISPLAY = pi3d.Display.create(x=250, y=250)
   DISPLAY.set_background(0.4,0.8,0.8,1)      # r,g,b,alpha
   DISPLAY.frames_per_second = 30
   # yellowish directional light blueish ambient light
@@ -50,7 +52,7 @@ if(USE_STEREO == False):
 
 # Create Hero & map
 #avatar = avatars.cloud()
-avatar = avatars.lego()
+avatar = avatars.link()
 avatar2 = avatars.roshi()
 if MAP_HALL:
   map1 = maps.hall()
@@ -60,7 +62,7 @@ else:
 
 #avatar camera
 rot = 0.0
-tilt = 0.0
+tilt = -7.0
 
 xm = 0.0
 zm = 0.0
@@ -77,25 +79,35 @@ crab = False
 roll = 0.0
 
 # variables
-distance_hero = 15
+#distance_hero = 15
+synchro_serial=0
 movement = 0
 mv_run = 0
+mv_run_diff = 0
+avatar_speed = 0.6
 lx = 0
 ly = 0
 lz = 0
 orientation = 0
-movement = 0
+camera_distance = -13
 
 shader = pi3d.Shader("uv_light")
 coffimg = pi3d.Texture("../textures/COFFEE.PNG")
+earth = pi3d.Texture("../textures/rock1.png")
 flatsh = pi3d.Shader("uv_flat")
 #font = pi3d.Pngfont("../fonts/GillSansMT.png", (221,0,170,255))
-font = pi3d.Pngfont("../fonts/GillSansMT.png", (20,10,250,255))
-mystring = pi3d.String(font=font, string="Ready to play ??", size=0.8, x=2, y=2, z=2, is_3d=True)
+font = pi3d.Pngfont("../fonts/GillSansMT.png", (255,80,0,255))
+mystring = pi3d.String(font=font, string="NOW NO EXCUSES", size=0.8, x=2, y=2, z=2, is_3d=True)
+mystring2 = pi3d.String(font=font, string="BE YOUR HERO !!!", size=0.8, x=2, y=2, z=2, is_3d=True)
 #mystring.translate(0.0, 0.0, 1)
 mystring.scale(3, 3, 3)
 mystring.set_shader(flatsh)
-myPlane = pi3d.Plane(w=4, h=1.2, name="plane", z=5)
+mystring2.scale(3, 3, 3)
+mystring2.set_shader(flatsh)
+myPlane = pi3d.Plane(w=7, h=1.8, name="plane")
+myTriangle = pi3d.Triangle(sx=2, sy=2, sz=2, name="triangle", rz = 180)
+mycone = pi3d.Cone(radius=1, height=2, sides=24, name="Cone", rz=180)
+#myTriangle.set_shader(shader)
 
 # Fetch key presses
 mykeys = pi3d.Keyboard()
@@ -114,66 +126,82 @@ joystick_right_v_axis_pos = 0.0
 timer =0
 keep_running = True
 
+
+# Initialize Camera
+if(USE_STEREO == False):
+  CAMERA = pi3d.Camera(absolute=False)
+
 def roger_handler(sensor, Euler0, Euler1, Euler2):
-  global pos_armR, pos_forarmR, pos_armL, pos_forarmL, timer, body_orientation, step, crab, mv_run
+  global pos_armR, pos_forarmR, pos_armL, pos_forarmL, timer, body_orientation, step, crab, mv_run, mv_run_diff, xm, zm
   timer += 1
+  print("Sensor:", sensor)
   if timer == 13:
     timer = 0
-  if sensor == 'C':
-    avatar.armL.rotateToZ(math.degrees(-Euler2))
-    avatar.armL.rotateToX(math.degrees(-Euler1))
+  if sensor == 'A':
+    avatar.armL.rotateToZ(math.degrees(-Euler1))
+    avatar.armL.rotateToX(math.degrees(-Euler2))
     avatar.armL.rotateToY(math.degrees(-Euler0))
-    pos_armL = [Euler0, Euler1, Euler2]
-    if timer == 1:
-      print("Bras : E0 = ", math.degrees(Euler0), " E1 = ", math.degrees(Euler1), " E2 = ", math.degrees(Euler2))
+    #pos_armL = [Euler0, Euler1, Euler2]
+    #print("Bras : E0 = ", math.degrees(Euler0), " E1 = ", math.degrees(Euler1), " E2 = ", math.degrees(Euler2))
 
-  elif sensor == 'B':
-    avatar.forarmL.rotateToZ(math.degrees(-Euler2 + pos_armL[2]))
-    avatar.forarmL.rotateToX(math.degrees(-Euler1 + pos_armL[1]))
-    avatar.forarmL.rotateToY(math.degrees(-Euler0 + pos_armL[0]))
-    pos_forarmL = [-Euler0 - pos_armL[0], -Euler0 - pos_armL[1], -Euler0 - pos_armL[2]]
+  elif sensor == 'C':
+    avatar.armR.rotateToZ(math.degrees(-Euler1))
+    avatar.armR.rotateToX(math.degrees(-Euler2))
+    avatar.armR.rotateToY(math.degrees(-Euler0))
+    #pos_forarmR = [-Euler0 - pos_armL[0], -Euler0 - pos_armL[1], -Euler0 - pos_armL[2]]
 
 
   elif sensor == 'D':
-    avatar.handL.rotateToZ(math.degrees(-Euler2))
-    avatar.handL.rotateToX(math.degrees(-Euler1))
-    avatar.handL.rotateToY(math.degrees(-Euler0))
-    if timer == 1:
-      print("                                                                     Avant : E0 = ", math.degrees(Euler0), " E1 = ", math.degrees(Euler1), " E2 = ", math.degrees(Euler2))
+    avatar.head.rotateToZ(math.degrees(-Euler1))
+    avatar.head.rotateToX(math.degrees(-Euler2))
+    avatar.head.rotateToY(math.degrees(-Euler0))
+
+    #if timer == 1:
+    #  print("                                        Avant : E0 = ", math.degrees(Euler0), " E1 = ", math.degrees(Euler1), " E2 = ", math.degrees(Euler2))
   elif sensor == 'J':
+
+    
+    #print("JOY {:03.2f} {:03.2f}".format(Euler0, Euler1))
     
     if Euler0 <= 128 and Euler1 <= 128:
-      body_orientation = +270 - Euler1
+      body_orientation = 270 - Euler1 #
     elif Euler0 >= 128 and Euler1 <= 128:
       body_orientation = 90 + Euler1
     elif Euler0 >= 128 and Euler1 >= 128:
-      body_orientation = (Euler1-157)
+      body_orientation = -157 + Euler1
     elif Euler0 <= 128 and Euler1 >= 128:
       body_orientation = 360 - Euler0
- 
-    if body_orientation <= 225 and body_orientation >= 135:
-      step = [1, 0.0, 1]
-      crab = False
-    elif body_orientation <= 315 and body_orientation >= 225:
-      step = [-1, 0.0, -1]
-      crab = True
-    elif (body_orientation <= 45 and body_orientation >= 0) or (body_orientation <= 360 and body_orientation >= 315):
-      step = [-1, 0.0, -1]
-      crab = False
-    elif body_orientation <= 135 and body_orientation >= 45:
-      step = [1, 0.0, 1]
-      crab = True
 
-    avatar.body.rotateToY(body_orientation)
-    mv_run += 0.3
+    #print(body_orientation)
+   
+    if Euler0 >= 128:
+      Euler0 -= 255
+    if Euler1 >= 128:
+      Euler1 -= 255
+    joystick_v_axis_pos = Euler0/128
+    joystick_h_axis_pos = Euler1/128
+
+    #camera_tilt, camera_orientation= CAMERA.point_at()
+    #print("ORIENTATION : ", camera_orientation)
+
+    camera_orientation = 0
+ 
     
-    #print("ROTATION", crab, "   ", body_orientation, " ===  ", math.radians(body_orientation-180)/math.pi, "  ---  ", 1/(math.tan(math.radians(body_orientation-180)/math.pi)+1))
-    """
-    if craby:
-      step = [1/(math.tan(math.radians(body_orientation-180)/math.pi)+1), 0.0, 1-( 1/(math.tan(math.radians(body_orientation-180)/math.pi)+1))]
-    else:
-      step = [1-math.tan(math.radians(body_orientation-180)/math.pi), 0.0, math.tan(math.radians(body_orientation-180)/math.pi)]
-    """
+    if math.fabs(joystick_v_axis_pos) > 0.1:
+        xm -= math.sin(math.pi/2+camera_orientation*20)*-joystick_v_axis_pos*avatar_speed
+        zm += math.cos(-math.pi/2+camera_orientation*20)*-joystick_v_axis_pos*avatar_speed
+        mv_run += math.fabs(joystick_v_axis_pos*avatar_speed*2/3)
+     
+    if math.fabs(joystick_h_axis_pos) > 0.1:
+        xm -= math.cos(math.pi/2+(-camera_orientation*20))*-joystick_h_axis_pos*avatar_speed
+        zm += math.sin(-math.pi/2+(-camera_orientation*20))*-joystick_h_axis_pos*avatar_speed
+        mv_run += math.fabs(joystick_h_axis_pos*avatar_speed*2/3)
+    mv_run_diff = math.fabs(joystick_v_axis_pos*avatar_speed*2/3) + math.fabs(joystick_h_axis_pos*avatar_speed*2/3)
+
+    #print(xm, ym, zm, "Euler : ",joystick_v_axis_pos, joystick_h_axis_pos )
+
+    avatar.center.rotateToY(body_orientation)  
+
   else:
     print("unhandled sensor:", sensor)
 
@@ -183,13 +211,8 @@ if(USE_SERIAL):
   ser = Serial_data('ABCDEFJ', roger_handler)
   ser.start()
 
-# Initialize Camera
-if(USE_STEREO == False):
-  CAMERA = pi3d.Camera(absolute=False)
-
-
 def update():
-  global xm, ym, zm, step, norm, roll, orientation, movement, lx, ly, lz, mv_run
+  global xm, ym, zm, step, norm, roll, orientation, movement, lx, ly, lz, mv_run, mv_run_diff, body_orientation, synchro_serial
 
   if(USE_STEREO): 
     (x, y, z) = engine.avatar_position
@@ -206,91 +229,89 @@ def update():
       else:
         ym, norm = map1.mymap.calcHeight(xm, zm, True)
       ym += avhgt
-      print(" Position : ", xm, " === ", ym, " === ",zm, " === ")
+      #print(" Position : ", xm, " === ", ym, " === ",zm, " === ")
       step = [0.0, 0.0, 0.0]
 
   map1.myecube.position(xm, ym, zm)
-
   roll = 0.0
   #map1.mymap.position(0.0, 0.0, 0.0)
   #avatar.body.position(xm, mymap.calcHeight(xm, zm+distance_hero)+5.5, zm+distance_hero)
-  if MAP_HALL:
-    avatar.body.position(xm+3, ym-5, zm+distance_hero)
-    avatar2.body.position(-10, ym-5, 15) # equivalent a -13, 15 et 0
-    mystring.position(-10, ym+1.5, 15)
-    myPlane.position(-10, ym+1.5, 15.05)
-  else:
-    avatar.body.position(xm+3, map1.mymap.calcHeight(xm, zm+distance_hero)+2, zm+distance_hero)
 
-    avatar2.body.position(-0, map1.mymap.calcHeight(-0, 10)+2, 10)
+  if MAP_HALL:
+    #avatar.body.position(xm, ym+0, zm) # goku
+    avatar.center.position(xm, ym-5, zm) # others
+    avatar2.center.position(-10, 10, 15) # equivalent a -13, 15 et 0
+    mystring.position(-10, ym+2.5, 14.9)
+    mystring2.position(-10, ym+1.5, 14.9)
+    mycone.position(-10, ym+2, 15)
+    myPlane.position(-10, ym+2, 15)
+  else:
+    avatar.center.position(xm, map1.mymap.calcHeight(xm, zm)+1, zm)
+    avatar2.center.position(-30, map1.mymap.calcHeight(-30, 80), 80)
+    print(xm, ym, zm)
   
   #roger.body.position(0, mymap.calcHeight(0, 28)+7, 28)
-  mv_run += 0.05
-  #avatar.run(mv_run)
+  #mv_run += 0.05
+
+  if(mv_run_diff > 0):
+    avatar.run(mv_run, mv_run_diff)
+    synchro_serial=10
+  
+  if(synchro_serial == 1):
+    avatar.stand()
+
+  if (synchro_serial > 0): 
+    synchro_serial -=1
+
+  mycone.rotateToY(movement)
+
+  mv_run_diff=0
   lx = xm
   ly = ym
   lz = zm
+  movement += 4
 
 
 def update_scenario():
   global xm, ym, zm
-
-  if -16 <= xm and xm <= -10 and 14 <= ym and ym <= 16 and -3 <= zm and zm <= 3:
-    #myPlane.draw(shader)
+  #print(xm, ym, zm)
+  if -15 <= xm and xm <= -5 and 14 <= ym and ym <= 16 and 10 <= zm and zm <= 19:
+    if -13 <= xm and xm <= -10:
+      xm = -13
+    elif -10 <= xm and xm <= -7:
+      xm = -7
+    if 13 <= zm and zm <= 14.5:
+      zm = 13
+    elif 14.5 <= zm and zm <= 16:
+      zm = 16
+    myPlane.draw(shader, [earth])
     mystring.draw()
+    mystring2.draw()
+    #mycone.draw(shader, [coffimg])
 
 def draw():
-  global movement
-  movement += 0.2 
-  """
-  roger.armR.rotateToZ(-60+ 25.0 * math.sin(movement))
-  roger.armR.rotateToX(0)
-  roger.handR.rotateToX(40.0 * math.sin(movement))
-  roger.armL.rotateToZ(-45)
-
-  roger2.armR.rotateToZ(-60+25.0 * math.sin(movement))
-  roger2.armR.rotateToX(90)
-  roger2.forarmR.rotateToX(40.0 * math.sin(movement))
-  roger2.armL.rotateToZ(-60)
-  """
-  #clash.draw(avatar2.body)
-  #avatar.body.rotateToY(180)
-
-  #roshi camera 9
-  avatar2.body.draw()
-
-  #LEGO camera 9
-  #avatar.head.rotateToY(65)
-  avatar.armR.rotateToX(-95)
-  #avatar.armL.rotateToX(+55)
-  avatar.armL.rotateToX(55 + 30 * math.sin(movement))
-  #avatar.body.rotateToY(-55)
-  avatar.body.draw()
-
+  avatar2.center.draw()
+  avatar.center.draw()
   map1.mymap.draw()
   map1.myecube.draw()
-  
-
+  #mystring.draw()
+  #myTriangle.draw()
   
 
 def read_inputs():
-  global step, crab, mymouse, my, mx, rot, tilt, keep_running
+  global step, crab, mymouse, my, mx, rot, tilt, keep_running, xm, zm
 
   #Press ESCAPE to terminate
   k = mykeys.read()
   if k >-1:
     if k == 119:  #key w forward
-      step = [0.5, 0.0, 0.5]
-      crab = False
+      zm+=1
     elif k == 115:  #kry s back
-      step = [-0.25, 0.0, -0.25]
-      crab = False
+      zm+= -1
     elif k == 97:   #key a crab left
-      step = [0.25, 0.0, 0.25]
-      crab = True
+      xm+=1
     elif k == 100:  #key d crab right
-      step = [-0.25, 0.0, -0.25]
-      crab = True
+      xm+= -1
     elif k == 112:  #key p picture
       pi3d.screenshot("forestWalk" + str(scshots) + ".jpg")
       scshots += 1
@@ -310,16 +331,24 @@ def read_inputs():
   mx, my = mymouse.velocity() #change to position() if Camera switched to absolute=True (default)
   buttons = mymouse.button_status()
 
-  rot = - mx * 0.2
-  tilt = my * 0.2
+  rot = - mx * 0.8
+  tilt = my * 0.8
 
 
 def camera_update():
   global xm, ym, zm, rot, tilt, step, norm, crab
-  xm, ym, zm = CAMERA.relocate(rot, tilt, point=[xm, ym, zm], distance=step, 
-                              normal=norm, crab=crab, slope_factor=1.5)
+  camRad = [camera_distance, camera_distance, camera_distance]
+  #print("DBG {:03.2f},{:03.2f},{:03.2f} dist {:03.2f},{:03.2f},{:03.2f}".format(xm, ym, zm, *step))
+  #xm, ym, zm = CAMERA.relocate(rot, tilt, point=[xm, ym, zm], distance=step, 
+  #                            normal=norm, crab=crab, slope_factor=1.5)
+
+  if MAP_HALL:
+    CAMERA.relocate(rot, tilt, point=[xm, ym, zm], distance=camRad)
+  else:
+    CAMERA.relocate(rot, tilt, point=[xm, map1.mymap.calcHeight(xm, zm)+3, zm], distance=camRad)
   CAMERA.rotateZ(roll)
 
+#CAMERA.relocate(rot, tilt, [0.0, 0.0, 0.0], camRad)
 
 # Main loop
 if(USE_STEREO):

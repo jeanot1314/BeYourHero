@@ -1,11 +1,12 @@
 # Be Your Hero!
 
-Blabla this project is cool.
+Welcome to Be Your Hero ! project
+This project will give you a full gesture control of any virtual hero you like with a simple set of inexpensive devices using sensors. 
 
 ## Installation
 
 These instructions are for Debian/Ubuntu based distributions. Please
-adapt the packages to your distribution if you're not on gjoizejgi
+adapt the packages to your distribution
 
 First, install the required packages:
 
@@ -24,5 +25,7 @@ Execute the script `src/RUN.py`:
 
     sudo python3 src/RUN.py
 
-## Blabla
+## update
+
+I still need to comment the code and add the Arduino parts. I just need few more days for this
 
