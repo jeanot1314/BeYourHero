@@ -1,7 +1,18 @@
 # Be Your Hero!
 
+---
+
 Welcome to Be Your Hero ! project
 This project will give you a full gesture control of any virtual hero you like with a simple set of inexpensive devices using sensors. 
+The code is still in development, many improvement should be ready on the next few weeks. 
+
+Created by [Jean Perardel](http://www.instructables.com/member/jeanotP1314/) from [Lab_1314](https://www.youtube.com/watch?v=qNliaFjvuI0&t=1s).
+
+Status: *** In development ***
+
+![Image of Pi](Pictures/Be_Your_Hero_Cover.jpg)
+
+---
 
 ## Installation
 
@@ -27,5 +38,5 @@ Execute the script `src/RUN.py`:
 
 ## update
 
-I still need to comment the code and add the Arduino parts. I just need few more days for this
+
 
