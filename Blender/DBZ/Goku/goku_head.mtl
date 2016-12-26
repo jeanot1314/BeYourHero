@@ -1,8 +1,8 @@
-# Blender MTL File: 'goku_head.blend'
+# Blender MTL File: 'Full_remake.blend'
 # Material Count: 4
 
 newmtl eyes.png
-Ns 94.117647
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.250000 0.250000 0.250000
@@ -12,8 +12,8 @@ d 1.000000
 illum 2
 map_Kd eyes.png
 
-newmtl face.png
-Ns 94.117647
+newmtl face.png.001
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.250000 0.250000 0.250000
@@ -24,7 +24,7 @@ illum 2
 map_Kd face.png
 
 newmtl hair.png
-Ns 94.117647
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.027208 0.027208 0.027208
 Ks 0.024625 0.024625 0.024625
@@ -34,8 +34,8 @@ d 1.000000
 illum 2
 map_Kd hair.png
 
-newmtl shirt.png
-Ns 94.117647
+newmtl shirt.png.001
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.250000 0.250000 0.250000

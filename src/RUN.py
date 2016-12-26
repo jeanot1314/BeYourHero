@@ -5,24 +5,32 @@ import math,random
 import pi3d
 import avatars
 import maps
+import objects
 #import sys
 from serial_data import Serial_data
 #sys.path.insert(0, "../python-vrzero")
 from vrzero import engine
 
-USE_SERIAL = True
-USE_STEREO = False
-USE_TUNNEL = True
-SHOW_STAT = True
+###### Select the mode here
+USE_SERIAL = False # try the app without a serial connection, keyboard still work
+USE_STEREO = False # Mode Stereoscopic
+USE_TUNNEL = True # If mode stereo is on, use Tunnel effect
+SHOW_STAT = False # Show FPS stat (Calibrated for Raspberry Pi)
 
-DEFAULT_SCREEN_WIDTH=1920
-DEFAULT_SCREEN_HEIGHT=1080
+# Change screen size to adapt your config
+DEFAULT_SCREEN_WIDTH=300
+DEFAULT_SCREEN_HEIGHT=200
 DEFAULT_EYE_SEPERATION=0.65
 
+# height of the camera
 DEFAULT_AVATAR_EYE_HEIGHT = 4.0
-DEFAULT_AVATAR_MOVEMENT_SPEED = 1.0
+DEFAULT_AVATAR_MOVEMENT_SPEED = 0.6
 
+# two maps for now, so Hall (True) or Forest (False) :)
 MAP_HALL = True
+# Select your Avatars here (you can manualy add more)
+AVATAR_1 = 'Lego'
+AVATAR_2 = 'Roshi'
 
 if(USE_STEREO):
   engine.show_stats=SHOW_STAT
@@ -33,11 +41,8 @@ if(USE_STEREO):
   engine.hmd_screen_width = DEFAULT_SCREEN_WIDTH
   engine.hmd_screen_height = DEFAULT_SCREEN_HEIGHT
   engine.hmd_eye_seperation = DEFAULT_EYE_SEPERATION
-
-
   engine.init()
   #engine.use_crosseyed_method=False
-
 
 # Setup display and initialise pi3d
 if(USE_STEREO == False):
@@ -50,30 +55,53 @@ if(USE_STEREO == False):
 
 #========================================
 
-# Create Hero & map
+# Create Hero & map, Select your avatars here
 #avatar = avatars.cloud()
-avatar = avatars.link()
-avatar2 = avatars.roshi()
+if AVATAR_1 == 'Link':
+  avatar = avatars.link()
+elif AVATAR_1 == 'Cloud':
+  avatar = avatars.cloud()
+elif AVATAR_1 == 'Lego':
+  avatar = avatars.lego()
+elif AVATAR_1 == 'Roshi':
+  avatar = avatars.roshi()
+elif AVATAR_1 == 'Goku':
+  avatar = avatars.goku()
+elif AVATAR_1 == 'Goomba':
+  avatar = avatars.goomba()
+
+if AVATAR_2 == 'Link':
+  avatar2 = avatars.link()
+elif AVATAR_2 == 'Cloud':
+  avatar2 = avatars.cloud()
+elif AVATAR_2 == 'Lego':
+  avatar2 = avatars.lego()
+elif AVATAR_2 == 'Roshi':
+  avatar2 = avatars.roshi()
+elif AVATAR_2 == 'Goku':
+  avatar2 = avatars.goku()
+
 if MAP_HALL:
   map1 = maps.hall()
 else:
   map1 = maps.forest()
-#avatar = avatars.goku()
 
-#avatar camera
-rot = 0.0
-tilt = -7.0
+bulle = objects.object()
 
+#avatar
+step = [0.0, 0.0, 0.0]
 xm = 0.0
 zm = 0.0
 if MAP_HALL:
-  avhgt = 15
+  avhgt = 15 # doit etre DEFAULT_AVATAR_EYE_HEIGHT
   ym = avhgt
 else:
-  avhgt = 9#9
+  avhgt = 9
   ym = map1.mymap.calcHeight(xm, zm) + avhgt
 
-step = [0.0, 0.0, 0.0]
+# camera position
+rot = 0.0
+tilt = -7.0
 norm = None
 crab = False
 roll = 0.0
@@ -82,20 +110,21 @@ roll = 0.0
 #distance_hero = 15
 synchro_serial=0
 movement = 0
+mv_tmp = 0
 mv_run = 0
 mv_run_diff = 0
-avatar_speed = 0.6
+avatar_speed = DEFAULT_AVATAR_MOVEMENT_SPEED
 lx = 0
 ly = 0
 lz = 0
 orientation = 0
 camera_distance = -13
 
-shader = pi3d.Shader("uv_light")
+
+shader_light = pi3d.Shader("uv_light")
 coffimg = pi3d.Texture("../textures/COFFEE.PNG")
 earth = pi3d.Texture("../textures/rock1.png")
 flatsh = pi3d.Shader("uv_flat")
-#font = pi3d.Pngfont("../fonts/GillSansMT.png", (221,0,170,255))
 font = pi3d.Pngfont("../fonts/GillSansMT.png", (255,80,0,255))
 mystring = pi3d.String(font=font, string="NOW NO EXCUSES", size=0.8, x=2, y=2, z=2, is_3d=True)
 mystring2 = pi3d.String(font=font, string="BE YOUR HERO !!!", size=0.8, x=2, y=2, z=2, is_3d=True)
@@ -119,10 +148,6 @@ pos_forarmR = [0, 0, 0]
 pos_armL = [0, 0, 0]
 pos_forarmL = [0, 0, 0]
 body_orientation = 0
-joystick_h_axis_pos = 0.0
-joystick_v_axis_pos = 0.0
-joystick_right_h_axis_pos = 0.0
-joystick_right_v_axis_pos = 0.0
 timer =0
 keep_running = True
 
@@ -132,7 +157,7 @@ if(USE_STEREO == False):
   CAMERA = pi3d.Camera(absolute=False)
 
 def roger_handler(sensor, Euler0, Euler1, Euler2):
-  global pos_armR, pos_forarmR, pos_armL, pos_forarmL, timer, body_orientation, step, crab, mv_run, mv_run_diff, xm, zm
+  global pos_armR, pos_forarmR, pos_armL, pos_forarmL, timer, body_orientation, mv_run, mv_run_diff, xm, zm
   timer += 1
   print("Sensor:", sensor)
   if timer == 13:
@@ -150,7 +175,6 @@ def roger_handler(sensor, Euler0, Euler1, Euler2):
     avatar.armR.rotateToY(math.degrees(-Euler0))
     #pos_forarmR = [-Euler0 - pos_armL[0], -Euler0 - pos_armL[1], -Euler0 - pos_armL[2]]
 
-
   elif sensor == 'D':
     avatar.head.rotateToZ(math.degrees(-Euler1))
     avatar.head.rotateToX(math.degrees(-Euler2))
@@ -159,10 +183,7 @@ def roger_handler(sensor, Euler0, Euler1, Euler2):
     #if timer == 1:
     #  print("                                        Avant : E0 = ", math.degrees(Euler0), " E1 = ", math.degrees(Euler1), " E2 = ", math.degrees(Euler2))
   elif sensor == 'J':
-
-    
     #print("JOY {:03.2f} {:03.2f}".format(Euler0, Euler1))
-    
     if Euler0 <= 128 and Euler1 <= 128:
       body_orientation = 270 - Euler1 #
     elif Euler0 >= 128 and Euler1 <= 128:
@@ -200,8 +221,6 @@ def roger_handler(sensor, Euler0, Euler1, Euler2):
 
     #print(xm, ym, zm, "Euler : ",joystick_v_axis_pos, joystick_h_axis_pos )
 
-    avatar.center.rotateToY(body_orientation)  
-
   else:
     print("unhandled sensor:", sensor)
 
@@ -220,7 +239,7 @@ def update():
       pass
     else:
       engine.avatar_y_pos = map1.mymap.calcHeight(x, z+18) + engine.avatar_eye_height +0
-
+  
   if not USE_STEREO:
     if step != [0.0, 0.0, 0.0]: #i.e. previous loop set movmement
       pass
@@ -231,6 +250,7 @@ def update():
       ym += avhgt
       #print(" Position : ", xm, " === ", ym, " === ",zm, " === ")
       step = [0.0, 0.0, 0.0]
+  
 
   map1.myecube.position(xm, ym, zm)
   roll = 0.0
@@ -238,20 +258,17 @@ def update():
   #avatar.body.position(xm, mymap.calcHeight(xm, zm+distance_hero)+5.5, zm+distance_hero)
 
   if MAP_HALL:
-    #avatar.body.position(xm, ym+0, zm) # goku
     avatar.center.position(xm, ym-5, zm) # others
     avatar2.center.position(-10, 10, 15) # equivalent a -13, 15 et 0
-    mystring.position(-10, ym+2.5, 14.9)
-    mystring2.position(-10, ym+1.5, 14.9)
-    mycone.position(-10, ym+2, 15)
-    myPlane.position(-10, ym+2, 15)
+    #bulle.Position(xm,ym,zm)
+    mystring.position(-10, 18.5, 14.9)
+    mystring2.position(-10, 17.5, 14.9)
+    #bulle.mycone.position(-10, ym+2, 15)
+    myPlane.position(-10, 18, 15)
   else:
-    avatar.center.position(xm, map1.mymap.calcHeight(xm, zm)+1, zm)
+    avatar.center.position(xm, map1.mymap.calcHeight(xm, zm), zm)
     avatar2.center.position(-30, map1.mymap.calcHeight(-30, 80), 80)
-    print(xm, ym, zm)
-  
-  #roger.body.position(0, mymap.calcHeight(0, 28)+7, 28)
-  #mv_run += 0.05
+    #print(xm, ym, zm)
 
   if(mv_run_diff > 0):
     avatar.run(mv_run, mv_run_diff)
@@ -263,7 +280,8 @@ def update():
   if (synchro_serial > 0): 
     synchro_serial -=1
 
-  mycone.rotateToY(movement)
+  avatar.center.rotateToY(body_orientation)
+  #bulle.mycone.rotateToY(movement)
 
   mv_run_diff=0
   lx = xm
@@ -284,12 +302,18 @@ def update_scenario():
       zm = 13
     elif 14.5 <= zm and zm <= 16:
       zm = 16
-    myPlane.draw(shader, [earth])
-    mystring.draw()
-    mystring2.draw()
-    #mycone.draw(shader, [coffimg])
+      #bulle.myPlane.draw(shader_light, [earth])
+      mystring.draw()
+      mystring2.draw()
+      myPlane.draw(shader_light, [earth])
+   
 
 def draw():
+  global mv_tmp
+  mv_tmp += 0.2
+
+  #bulle.mycone.draw(shader, [coffimg])
+  #avatar.handR.rotateToY(50 * math.sin(mv_tmp))
   avatar2.center.draw()
   avatar.center.draw()
   map1.mymap.draw()
@@ -299,26 +323,44 @@ def draw():
   
 
 def read_inputs():
-  global step, crab, mymouse, my, mx, rot, tilt, keep_running, xm, zm
+  global mymouse, my, mx, rot, tilt, keep_running, xm, zm, mv_run, mv_run_diff, body_orientation
 
-  #Press ESCAPE to terminate
-  k = mykeys.read()
+  k = mykeys.read() # Read Keyboard inputs
+  
   if k >-1:
     if k == 119:  #key w forward
       zm+=1
+      mv_run += math.fabs(avatar_speed*2/3)
+      mv_run_diff = 1
+      body_orientation = 180
     elif k == 115:  #kry s back
       zm+= -1
-    elif k == 97:   #key a crab left
-      xm+=1
-    elif k == 100:  #key d crab right
+      mv_run += math.fabs(avatar_speed*2/3)
+      mv_run_diff = 1
+      body_orientation = 0
+    elif k == 97:   #key a left
       xm+= -1
+      mv_run += math.fabs(avatar_speed*2/3)
+      mv_run_diff = 1
+      body_orientation = 90
+    elif k == 100:  #key d right
+      xm+=1
+      mv_run += math.fabs(avatar_speed*2/3)
+      mv_run_diff = 1
+      body_orientation = 270
     elif k == 112:  #key p picture
       pi3d.screenshot("forestWalk" + str(scshots) + ".jpg")
       scshots += 1
     elif k == 10:   #key RETURN
       mc = 0
-    elif k == 27:  #Escape key
-      keep_running = False
+    elif k == 27:  #Escape key to exit
+      print("***** Try to quit *****")
+      if USE_STEREO:
+        engine.hmd.close()
+        engine.DISPLAY.destroy()
+        engine.keep_running = False
+      else:
+        keep_running = False
       mykeys.close()
       if USE_SERIAL:
         ser.stop()
@@ -336,7 +378,7 @@ def read_inputs():
 
 
 def camera_update():
-  global xm, ym, zm, rot, tilt, step, norm, crab
+  global xm, ym, zm, rot, tilt, norm
   camRad = [camera_distance, camera_distance, camera_distance]
   #print("DBG {:03.2f},{:03.2f},{:03.2f} dist {:03.2f},{:03.2f},{:03.2f}".format(xm, ym, zm, *step))
   #xm, ym, zm = CAMERA.relocate(rot, tilt, point=[xm, ym, zm], distance=step, 
@@ -348,11 +390,10 @@ def camera_update():
     CAMERA.relocate(rot, tilt, point=[xm, map1.mymap.calcHeight(xm, zm)+3, zm], distance=camRad)
   CAMERA.rotateZ(roll)
 
-#CAMERA.relocate(rot, tilt, [0.0, 0.0, 0.0], camRad)
-
 # Main loop
 if(USE_STEREO):
   while engine.DISPLAY.loop_running() or engine.keep_running:
+      #read_inputs()
       engine.poll_inputs()
       engine.update_avatar()
       update()
@@ -364,11 +405,11 @@ if(USE_STEREO):
 
 else: # not stereo
   while DISPLAY.loop_running() or keep_running:
+    read_inputs()
     camera_update()
     update()
     update_scenario()
     draw()
-    read_inputs()
   print(" STOP STOP")
 
   

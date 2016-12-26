@@ -1,8 +1,8 @@
-# Blender MTL File: 'goku_foot.blend'
+# Blender MTL File: 'Full_remake.blend'
 # Material Count: 2
 
-newmtl face.png
-Ns 94.117647
+newmtl face.png.006
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.250000 0.250000 0.250000
@@ -12,8 +12,8 @@ d 1.000000
 illum 2
 map_Kd face.png
 
-newmtl pants.png
-Ns 94.117647
+newmtl pants.png.007
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.250000 0.250000 0.250000
