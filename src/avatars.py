@@ -119,9 +119,6 @@ class cloud(BaseAvatar):
     self.head.rotateToY(0)
     self.head.rotateToX(0)
 
-  def jump(self, position):
-    pass
-
 class lego(BaseAvatar):
 
   def __init__(self):
@@ -310,9 +307,52 @@ class link(BaseAvatar):
     self.head.rotateToY(0)
     self.head.rotateToX(0)
 
-  def jump(self, position):
-    self.armL.rotateToX(20 * math.sin(position))
-    self.armR.rotateToX(-20 * math.sin(position))
+  def pose(self):
+
+    self.legR.rotateToX(15)
+    self.legL.rotateToX(-15)
+    self.footR.rotateToX(-10)
+    self.footL.rotateToX(0)
+
+    #self.armL.rotateToZ(280)
+    self.armL.rotateToZ(40)
+    self.forarmL.rotateToY(10)
+
+    self.armR.rotateToX(30)
+    self.armR.rotateToY(280)
+    #self.armR.rotateToZ(280)
+    self.forarmR.rotateToZ(90)
+    self.forarmR.rotateToY(300)
+
+    self.body.rotateToY(0)
+    self.body.rotateToX(0)
+    self.head.rotateToY(0)
+    self.head.rotateToX(0)
+
+  def jump(self, position, x, y, z, orientation):
+    positionJump = position
+    positionRun = 70
+    if orientation == 0:
+      z += - (14 -position/2)
+    elif orientation == 90:
+      x += -(14 -position/2)
+    elif orientation == 180:
+      z += (14 -position/2)
+    elif orientation == 270:
+      x += (14 -position/2)
+    if positionJump >= 14: 
+      self.center.position(x, y + (7 - positionJump/4), z)
+    else : 
+      self.center.position(x, y + (positionJump/4), z)
+    self.legR.rotateToX(25 * math.sin(positionRun))
+    self.legL.rotateToX(-25 * math.sin(positionRun))
+    self.footR.rotateToX(-20+ 20 * math.sin(positionRun))
+    self.footL.rotateToX(-20 -20 * math.sin(positionRun))
+    
+    self.armL.rotateToZ(300)
+    self.armR.rotateToZ(60)
+    self.armR.rotateToY(35.0 * math.sin(positionRun))
+    self.armL.rotateToY(35.0 * math.sin(positionRun))
 
 class goku(BaseAvatar):
 
@@ -339,7 +379,7 @@ class goku(BaseAvatar):
 
     self.armL = pi3d.Model(file_string="../Blender/DBZ/Goku/goku_armL.obj", cy=-29, cx=-5, cz=0.4)
     self.armL.set_shader(shader)
-    self.handL = pi3d.Model(file_string="../Blender/DBZ/Goku/goku_handL.obj", cy=-29, cx=-11, cz=0.8)
+    self.handL = pi3d.Model(file_string="../Blender/DBZ/Goku/goku_handL2.obj", cy=-29, cx=-11, cz=0.8)
     self.handL.set_shader(shader)
 
     self.legL = pi3d.Model(file_string="../Blender/DBZ/Goku/goku_legL.obj", cy = -21)
@@ -422,6 +462,30 @@ class goku(BaseAvatar):
     self.body.rotateToX(0)
     self.head.rotateToY(0)
     self.head.rotateToX(0)
+
+  def pose(self):
+
+    self.legR.rotateToX(40)
+    self.legL.rotateToX(-40)
+    self.footR.rotateToX(-35)
+    self.footL.rotateToX(0)
+
+    #self.armL.rotateToZ(280)
+    #self.armL.rotateToZ(40)
+    #self.forarmL.rotateToY(10)
+
+    self.armL.rotateToX(30)
+    self.armL.rotateToY(-280)
+
+    #self.armR.rotateToZ(90)
+    self.armR.rotateToZ(70)
+    self.handR.rotateToY(-90)
+    #self.handR.rotateToY(350)
+
+    self.body.rotateToY(0)
+    self.body.rotateToX(-30)
+    #self.head.rotateToY(0)
+    self.head.rotateToX(20)
 
   def jump(self, position):
     self.armL.rotateToX(20 * math.sin(position))
