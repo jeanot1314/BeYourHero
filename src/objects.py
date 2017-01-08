@@ -15,8 +15,8 @@ class object(object):
 
     flatsh = pi3d.Shader("uv_flat")
     font = pi3d.Pngfont("../fonts/GillSansMT.png", (255,80,0,255))
-    self.mystring = pi3d.String(font=font, string="NOW NO EXCUSES", size=0.8, x=0, y=-0.2, z=-0.5, is_3d=True, rx = 270)
-    self.mystring2 = pi3d.String(font=font, string="BE YOUR HERO !!!", size=0.8, x=0, y=-0.2, z=0.5, is_3d=True, rx = 270)
+    self.mystring = pi3d.String(font=font, string="CONGRATULATION", size=0.8, x=0, y=-0.2, z=-0.5, is_3d=True, rx = 270)
+    self.mystring2 = pi3d.String(font=font, string="YOU ARE A HERO !!!", size=0.8, x=0, y=-0.2, z=0.5, is_3d=True, rx = 270)
     #mystring.translate(0.0, 0.0, 1)
     self.mystring.scale(3, 3, 3)
     self.mystring.set_shader(flatsh)

@@ -4,6 +4,38 @@
 import pi3d
 import math,random		
 
+px = -1.0
+py = 0.0
+pz = 114.0
+
+class templeoftime(object):
+
+  def __init__(self):
+    flatsh = pi3d.Shader("uv_flat")
+    self.building = pi3d.Model(file_string="../Blender/Map/Temple_of_Time/TempleofTime.obj", sx=0.2, sy=0.2, sz=0.2)
+    self.building.set_shader(flatsh)
+
+  def draw(self):
+    self.building.draw()
+
+  def height(self, x, z):
+    global px, py, pz
+    if pz + 12 < z and pz + z < 160:
+      if px + -23 < x and x < px + 23 and pz + 77 < z and z < pz + 120:
+        return 6.4
+      else:
+        return 3.2
+    elif px + -11 < x and x < px + 12 and pz + -1 <= z:
+      return 3.2
+    elif px + -7 < x and x < px + 7 and pz + -8 < z and z < pz + -1:
+      return 4
+    elif px + -8 < x and x < px + 8 and pz + -67 < z and z < pz + -53:
+      return 1.6
+    else:
+      return 0
+
+  def update_pos(self, x, z):
+   self.building.position(px, py, pz)
 
 class forest(object):
 
@@ -11,9 +43,12 @@ class forest(object):
 
     # load shader
     shader = pi3d.Shader("uv_bump")
-    shinesh = pi3d.Shader("uv_reflect")
+    #shinesh = pi3d.Shader("uv_reflect")
     flatsh = pi3d.Shader("uv_flat")
 
+    tree1img = pi3d.Texture("../textures/tree1.png")
+    tree2img = pi3d.Texture("../textures/tree2.png")
+    hb2img = pi3d.Texture("../textures/hornbeam2.png")
     bumpimg = pi3d.Texture("../textures/grasstile_n.jpg")
     reflimg = pi3d.Texture("../textures/stars.jpg")
     floorimg = pi3d.Texture("../textures/floor_nm.jpg")
@@ -21,7 +56,6 @@ class forest(object):
     FOG = ((0.3, 0.3, 0.4, 0.8), 650.0)
     TFOG = ((0.2, 0.24, 0.22, 1.0), 150.0)
 
-    #myecube = pi3d.EnvironmentCube(900.0,"HALFCROSS")
     ectex=pi3d.loadECfiles("../textures/ecubes","sbox")
     self.myecube = pi3d.EnvironmentCube(size=900.0, maptype="FACES", name="cube")
     self.myecube.set_draw_details(flatsh, ectex)
@@ -36,13 +70,60 @@ class forest(object):
                          divx=32, divy=32) 
     self.mymap.set_draw_details(shader, [mountimg1, bumpimg, reflimg], 128.0, 0.0)
     self.mymap.set_fog(*FOG)
-    self.mymap.position(0.0, 0.0, 0.0)
+
+    self.building = pi3d.Model(file_string="../models/ConferenceHall/conferencehall.egg", name="Hall", sx=0.1, sy=0.1, sz=0.1)
+    self.building.set_shader(flatsh)
+
+    #Create tree models
+    treeplane = pi3d.Plane(w=4.0, h=5.0)
+
+    treemodel1 = pi3d.MergeShape(name="baretree")
+    treemodel1.add(treeplane.buf[0], 0,0,0)
+    treemodel1.add(treeplane.buf[0], 0,0,0, 0,90,0)
+
+    treemodel2 = pi3d.MergeShape(name="bushytree")
+    treemodel2.add(treeplane.buf[0], 0,0,0)
+    treemodel2.add(treeplane.buf[0], 0,0,0, 0,60,0)
+    treemodel2.add(treeplane.buf[0], 0,0,0, 0,120,0)
+
+    #Scatter them on map using Merge shape's cluster function
+    self.mytrees1 = pi3d.MergeShape(name="trees1")
+    self.mytrees1.cluster(treemodel1.buf[0], self.mymap,0.0,0.0,200.0,200.0,20,"",8.0,3.0)
+    self.mytrees1.set_draw_details(flatsh, [tree2img], 0.0, 0.0)
+    self.mytrees1.set_fog(*TFOG)
+
+    self.mytrees2 = pi3d.MergeShape(name="trees2")
+    self.mytrees2.cluster(treemodel2.buf[0], self.mymap,0.0,0.0,200.0,200.0,20,"",6.0,3.0)
+    self.mytrees2.set_draw_details(flatsh, [tree1img], 0.0, 0.0)
+    self.mytrees2.set_fog(*TFOG)
+
+    self.mytrees3 = pi3d.MergeShape(name="trees3")
+    self.mytrees3.cluster(treemodel2, self.mymap,0.0,0.0,300.0,300.0,20,"",4.0,2.0)
+    self.mytrees3.set_draw_details(flatsh, [hb2img], 0.0, 0.0)
+    self.mytrees3.set_fog(*TFOG)
 
     #screenshot number
     scshots = 1
 
-  def building(self):
-    pass
+  def height(self, x, z):
+
+    if -40 < x and x < 50 and -40 < z and z < 40:
+      return 19
+    else:
+      return self.mymap.calcHeight(x, z)
+
+  def draw(self):
+    self.mymap.draw()
+    self.building.draw()
+    self.myecube.draw()
+    #self.mytrees1.draw()
+    #self.mytrees2.draw()
+    #self.mytrees3.draw()
+
+  def update_pos(self, x, z):
+    self.myecube.position(x, self.height(x, z), z)
+    self.mymap.position(-360.0, 0.0, 180.0)
+    self.building.position(0, 19, 0)
 
 class moon(object):
 

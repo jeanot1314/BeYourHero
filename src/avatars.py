@@ -192,16 +192,42 @@ class goomba(BaseAvatar):
 
   def __init__(self):
     super().__init__()
-    self.center = pi3d.Model(file_string="../Blender/goomba/goomba.obj")
+    self.center = pi3d.Model(file_string="../Blender/goomba/goomba/goomba.obj")
     shader = pi3d.Shader("uv_flat")
     self.center.set_shader(shader)
-    self.center.scale(0.1,0.1,0.1)
+    #self.center.scale(0.1,0.1,0.1)
+    self.center.scale(0.3,0.3,0.3)
   def run(self, position, diff):
-    self.center.rotateToX(8.0 * math.sin(position))
-    self.center.rotateToZ(8.0 * math.sin(position))
+    self.center.rotateToX(12.0 * math.sin(position*2))
+    self.center.rotateToZ(12.0 * math.sin(position*3))
   def stand(self):
     self.body.rotateToX(0)
     self.body.rotateToZ(0)
+
+class goombaB(BaseAvatar):
+
+  def __init__(self):
+    super().__init__()
+    self.center = pi3d.Model(file_string="../Blender/goomba/goomba_blood/goomba.obj")
+    shader = pi3d.Shader("uv_bump")
+    self.center.set_shader(shader)
+    #self.center.scale(0.1,0.1,0.1)
+    self.center.scale(0.3,0.3,0.3)
+  def run(self, position, diff):
+    self.center.rotateToX(12.0 * math.sin(position*2))
+    self.center.rotateToZ(12.0 * math.sin(position*3))
+  def stand(self):
+    self.body.rotateToX(0)
+    self.body.rotateToZ(0)
+
+class goombaD(BaseAvatar):
+
+  def __init__(self):
+    super().__init__()
+    self.center = pi3d.Model(file_string="../Blender/goomba/goomba_dead/goomba.obj")
+    shader = pi3d.Shader("uv_bump")
+    self.center.set_shader(shader)
+    self.center.scale(0.4,0.4,0.4)
 
 class link(BaseAvatar):
 
@@ -329,30 +355,134 @@ class link(BaseAvatar):
     self.head.rotateToY(0)
     self.head.rotateToX(0)
 
-  def jump(self, position, x, y, z, orientation):
-    positionJump = position
-    positionRun = 70
-    if orientation == 0:
-      z += - (14 -position/2)
-    elif orientation == 90:
-      x += -(14 -position/2)
-    elif orientation == 180:
-      z += (14 -position/2)
-    elif orientation == 270:
-      x += (14 -position/2)
-    if positionJump >= 14: 
-      self.center.position(x, y + (7 - positionJump/4), z)
-    else : 
-      self.center.position(x, y + (positionJump/4), z)
-    self.legR.rotateToX(25 * math.sin(positionRun))
-    self.legL.rotateToX(-25 * math.sin(positionRun))
-    self.footR.rotateToX(-20+ 20 * math.sin(positionRun))
-    self.footL.rotateToX(-20 -20 * math.sin(positionRun))
-    
-    self.armL.rotateToZ(300)
-    self.armR.rotateToZ(60)
-    self.armR.rotateToY(35.0 * math.sin(positionRun))
-    self.armL.rotateToY(35.0 * math.sin(positionRun))
+  def jump(self, position):
+
+    self.armL.rotateToZ(60)
+    #self.armR.rotateToZ(300)
+    #self.armR.rotateToY(35.0 * math.sin(positionRun))
+    #self.armL.rotateToY(35.0 * math.sin(positionRun))
+
+  def cut(self, position):
+    #self.armL.rotateToZ(300)
+    self.armL.rotateToZ(300+30.0 * math.sin(position/4)) # half a move
+    self.armL.rotateToY(0+70.0 * math.sin(position/4)) # half a move
+    self.forarmL.rotateToY(0+70.0 * math.sin(position/4))
+
+class linkstereo(BaseAvatar):
+
+  def __init__(self):
+    super().__init__()
+    self.center = pi3d.Model(file_string="../Blender/Zelda/Custom_Link/Link_full_butt.obj")
+    shader = pi3d.Shader("uv_flat")
+    self.center.set_shader(shader)
+    self.center.scale(0.6, 0.6, 0.6)
+                
+    self.armR = pi3d.Model(file_string="../Blender/Zelda/Custom_Link/Link_armR.obj", cy=-8.6, cx=1, cz=-0.7)
+    self.armR.set_shader(shader)
+    self.forarmR = pi3d.Model(file_string="../Blender/Zelda/Custom_Link/Link_forarmR.obj", cy=-8.8, cx=2.8, cz=-0.7)
+    self.forarmR.set_shader(shader)
+    self.handR = pi3d.Model(file_string="../Blender/Zelda/Custom_Link/Link_handR.obj", cy=-8.8, cx=4.4, cz=-0.7)
+    self.handR.set_shader(shader)
+
+    self.armL = pi3d.Model(file_string="../Blender/Zelda/Custom_Link/Link_armL.obj", cy=-8.6, cx=-1, cz=-0.7)
+    self.armL.set_shader(shader)
+    self.forarmL = pi3d.Model(file_string="../Blender/Zelda/Custom_Link/Link_forarmL.obj", cy=-8.8, cx=-2.8, cz=-0.7)
+    self.forarmL.set_shader(shader)
+    self.handL = pi3d.Model(file_string="../Blender/Zelda/Custom_Link/Link_handL.obj", cy=-8.8, cx=-4.4, cz=-0.7)
+    self.handL.set_shader(shader)
+
+    self.center.add_child(self.armR)
+    self.armR.add_child(self.forarmR)
+    self.forarmR.add_child(self.handR)
+
+    self.center.add_child(self.armL)
+    self.armL.add_child(self.forarmL)
+    self.forarmL.add_child(self.handL)
+
+  def run(self, position, diff):
+    #compute motion
+    if diff <= 0.25:      
+      self.legR.rotateToX(15 * math.sin(position))
+      self.legL.rotateToX(-15 * math.sin(position))
+      self.footR.rotateToX(-15+ 15 * math.sin(position))
+      self.footL.rotateToX(-15 -15 * math.sin(position))
+
+      self.armL.rotateToZ(280)
+      self.armR.rotateToZ(80)
+      self.armR.rotateToY(25.0 * math.sin(position))
+      self.armL.rotateToY(25.0 * math.sin(position))
+
+      self.body.rotateToY(10.0 * math.sin(position))
+      self.head.rotateToY(-8.0 * math.sin(position))
+
+    else:
+      positionRun = position
+      self.legR.rotateToX(25 * math.sin(positionRun))
+      self.legL.rotateToX(-25 * math.sin(positionRun))
+      self.footR.rotateToX(-20+ 20 * math.sin(positionRun))
+      self.footL.rotateToX(-20 -20 * math.sin(positionRun))
+
+      self.armL.rotateToZ(300)
+      self.armR.rotateToZ(60)
+      self.armR.rotateToY(35.0 * math.sin(positionRun))
+      self.armL.rotateToY(35.0 * math.sin(positionRun))
+
+      self.body.rotateToY(10.0 * math.sin(positionRun))
+      self.body.rotateToX(-15.0)
+      self.head.rotateToY(-8.0 * math.sin(positionRun))
+      self.head.rotateToX(10.0)
+
+  def stand(self):
+
+    self.legR.rotateToX(0)
+    self.legL.rotateToX(0)
+    self.footR.rotateToX(0)
+    self.footL.rotateToX(0)
+
+    self.armL.rotateToZ(280)
+    self.armR.rotateToZ(80)
+    self.armR.rotateToY(0)
+    self.armL.rotateToY(0)
+
+    self.body.rotateToY(0)
+    self.body.rotateToX(0)
+    self.head.rotateToY(0)
+    self.head.rotateToX(0)
+
+  def pose(self):
+
+    self.legR.rotateToX(15)
+    self.legL.rotateToX(-15)
+    self.footR.rotateToX(-10)
+    self.footL.rotateToX(0)
+
+    #self.armL.rotateToZ(280)
+    self.armL.rotateToZ(40)
+    self.forarmL.rotateToY(10)
+
+    self.armR.rotateToX(30)
+    self.armR.rotateToY(280)
+    #self.armR.rotateToZ(280)
+    self.forarmR.rotateToZ(90)
+    self.forarmR.rotateToY(300)
+
+    self.body.rotateToY(0)
+    self.body.rotateToX(0)
+    self.head.rotateToY(0)
+    self.head.rotateToX(0)
+
+  def jump(self, position):
+
+    self.armL.rotateToZ(60)
+    #self.armR.rotateToZ(300)
+    #self.armR.rotateToY(35.0 * math.sin(positionRun))
+    #self.armL.rotateToY(35.0 * math.sin(positionRun))
+
+  def cut(self, position):
+    #self.armL.rotateToZ(300)
+    self.armL.rotateToZ(300+30.0 * math.sin(position/4)) # half a move
+    self.armL.rotateToY(0+70.0 * math.sin(position/4)) # half a move
+    self.forarmL.rotateToY(0+70.0 * math.sin(position/4))
 
 class goku(BaseAvatar):
 
@@ -489,7 +619,13 @@ class goku(BaseAvatar):
 
   def jump(self, position):
     self.armL.rotateToX(20 * math.sin(position))
-    self.armR.rotateToX(-20 * math.sin(position))
+    #self.armR.rotateToX(-20 * math.sin(position))
+
+  def cut(self, position):
+    #self.armL.rotateToZ(300)
+    self.armL.rotateToZ(300+30.0 * math.sin(position/4)) # half a move
+    self.armL.rotateToY(0+70.0 * math.sin(position/4)) # half a move
+    self.handL.rotateToY(0+70.0 * math.sin(position/4))
 
 class guy(BaseAvatar):
 
