@@ -235,18 +235,6 @@ class handlers:
     if self.mykeys.key_state("KEY_P"): #112:  #key p picture
         pi3d.screenshot("BeYourHero" + str(scshots) + ".jpg")
         scshots += 1
-    if self.mykeys.key_state("KEY_ESC"):  #Escape key to exit
-        print("***** EXIT *****")
-        #os.system('xset r on')
-
-        self.keep_running = False
-
-        #self.mykeys.release()
-        if self.USE_SERIAL:
-          self.ser.stop()
-        #mymouse.stop()
-        #DISPLAY.destroy()
-        #DISPLAY.stop()
 
     if orientation == 1:
       self.body_orientation = 0
@@ -266,6 +254,13 @@ class handlers:
       self.body_orientation = 315
 
   def read_exit(self):
+    if self.mykeys.key_state("KEY_ESC"):  #Escape key to exit
+      print("***** EXIT *****")
+      self.keep_running = False
+      self.mykeys.release()
+      if self.USE_SERIAL:
+        self.ser.stop()
+
     return self.keep_running
 
 

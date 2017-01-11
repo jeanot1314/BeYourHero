@@ -384,30 +384,18 @@ def camera_update():
     CAMERA.relocate(rot, -tilt, point=[xm, map1.height(xm, zm)+5, zm], distance=camRad)
     draw()
 
-    #if rot:
-      #print(rot, body_orientation, body_orientation_diff)
-    #CAMERA.relocate(rot, tilt, point=[-5, 84.5, -0], distance=camRad)
-    #tt, rrot = CAMERA.point_at()
-    #tt, rrot, rr = CAMERA.get_direction()
-    #print(tt, body_orientation)
-    #rot = 0
-    #body_orientation_diff = body_orientation
-    #CAMERA.rotateZ(roll)
-
-
 # Main loop
 while DISPLAY.loop_running() and keep_running:
   handler.mykeys.do_input_events()
-  keep_running = handler.read_exit()
-  if not keep_running:
-    DISPLAY.destroy()
-    DISPLAY.stop()
   update_position()
   update_avatar()
   camera_update()
   handler.update()
   #engine.stats()
+  keep_running = handler.read_exit()
 
+DISPLAY.destroy()
+DISPLAY.stop()
 
 
 
