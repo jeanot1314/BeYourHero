@@ -209,7 +209,6 @@ class handlers:
       orientation += 2
       #self.body_orientation = 90
     if self.mykeys.key_state("KEY_W"): #pi3d.event.Event.key_to_code('KEY_W'):#119:  #key z forward
-      print("FRONT")
       self.z+=1
       self.mv_run += math.fabs(self.avatar_speed*1/2)
       self.mv_run_diff = 1

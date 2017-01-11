@@ -22,13 +22,20 @@ adapt the packages to your distribution
 First, install the required packages:
 
     sudo apt-get update -y
-    sudo apt-get install -y python3-dev python3-setuptools libjpeg-dev zlib1g-dev libpng12-dev libfreetype6-dev python3-pip libhidapi-libusb0 xboxdrv libopenhmd-dev
+    sudo apt-get install -y python3-dev python3-setuptools libjpeg-dev zlib1g-dev libpng12-dev libfreetype6-dev python3-pip libhidapi-libusb0 xboxdrv python3-numpy
 
 Then clone the project and install the dependencies:
 
     git clone https://github.com/jeanot1314/BeYourHero.git
     cd BeYourHero
     sudo pip3 install -r requirements.txt
+
+    cd /tmp
+    wget https://github.com/WayneKeenan/python-vrzero/raw/master/install/openhmd_0.0.1-1_armhf.deb
+    sudo dpkg -i openhmd_0.0.1-1_armhf.deb
+    sudo ldconfig
+    cd ~
+    cd BeYourHero
 
 ## Run
 
