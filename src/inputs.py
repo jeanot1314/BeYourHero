@@ -14,6 +14,8 @@ from serial_data import Serial_data
 class handlers:
 
   def __init__(self):
+
+    self.USE_SERIAL = False
     self.rot = 0
     self.tilt = 0
 
@@ -26,9 +28,11 @@ class handlers:
 
     self.flag_jump = 0
     self.flag_cut = 0
+    self.flag_protect = 0.0
     self.ser = 0
     self.cpt_view = 0
     self.flag_view = True
+    self.Euler_diff=0
     #mykeys = pi3d.Keyboard(use_curses=True)
     self.mykeys = pi3d.InputEvents(self.key_handler_func, self.mouse_handler_func, self.joystick_handler_func)
     self.keep_running = True
@@ -40,6 +44,9 @@ class handlers:
   def position_upd(self, x, z):
     self.x += x
     self.z += z
+
+  def update(self):
+    self.mv_run_diff=0
 
   def position(self):
     return(self.x, self.z, self.body_orientation, self.mv_run, self.mv_run_diff, self.flag_view)
@@ -54,10 +61,10 @@ class handlers:
       self.flag_cut-=1
     if self.flag_jump:
       self.flag_jump-=1
-    return(jump, cut)
+    return(jump, cut, self.flag_protect)
 
   def actionRead(self):
-    return(self.flag_jump, self.flag_cut)
+    return(self.flag_jump, self.flag_cut, self.flag_protect)
 
 ######### Fonctions ##########
   def roger_handler(self, sensor, Euler0, Euler1, Euler2):
@@ -69,28 +76,30 @@ class handlers:
     SIMPLE_MOVE = True
     if SIMPLE_MOVE:
       if sensor == 'A':
-        if flag_cut < 4 and math.fabs(Euler1) + math.fabs(Euler2) >= Euler_diff + 0.3:
-          flag_cut = 12
+        if not self.flag_cut and math.fabs(Euler1) + math.fabs(Euler2) >= self.Euler_diff + 0.3:
+          self.flag_cut = 12
         #print(" E1 = ", Euler1, " E2 = ", Euler2)
         #print(math.fabs(Euler1) + math.fabs(Euler2))
-        Euler_diff = math.fabs(Euler1) + math.fabs(Euler2)
+        self.Euler_diff = math.fabs(Euler1) + math.fabs(Euler2)
 
-      elif sensor == 'C':
-        if flag_cut < 4 and math.fabs(Euler1) + math.fabs(Euler2) >= Euler_diff + 0.3:
-          flag_cut = 12
-        Euler_diff = math.fabs(Euler1) + math.fabs(Euler2)
+      elif sensor == 'D':
+        #print(math.fabs(Euler1) + math.fabs(Euler2))
+        if math.fabs(Euler1) + math.fabs(Euler2) >= 0.7:
+          self.flag_protect = 1
+        else:
+          self.flag_protect = 0
         #avatar.armR.rotateToZ(math.degrees(-Euler1))
         #avatar.armR.rotateToX(math.degrees(-Euler2))
         #avatar.armR.rotateToY(math.degrees(-Euler0))
         #pos_forarmR = [-Euler0 - pos_armL[0], -Euler0 - pos_armL[1], -Euler0 - pos_armL[2]]
 
-      elif sensor == 'D':
+      elif sensor == 'C':
         avatar.head.rotateToZ(math.degrees(-Euler1))
         avatar.head.rotateToX(math.degrees(-Euler2))
         avatar.head.rotateToY(math.degrees(-Euler0))
 
     else:
-      if sensor == 'A':
+      if sensor == 'B':
         avatar.armL.rotateToZ(math.degrees(-Euler1))
         avatar.armL.rotateToX(math.degrees(-Euler2))
         avatar.armL.rotateToY(math.degrees(-Euler0))
@@ -114,8 +123,9 @@ class handlers:
     if sensor == 'J':
       #print("JOY {:03.2f} {:03.2f}".format(Euler0, Euler1))
       #print(Euler2)
- 
+      #print("ENTER EULER 2 ", Euler0, Euler1, Euler2)
       if Euler2 == '0':
+
         if Euler0 <= 128 and Euler1 <= 128:
           self.body_orientation = 270 - Euler1 
         elif Euler0 >= 128 and Euler1 <= 128:
@@ -168,6 +178,7 @@ class handlers:
   def serial(self):
     self.ser = Serial_data('ABCDEFJ', self.roger_handler)
     self.ser.start()
+    self.USE_SERIAL = True
   
   def joystick_handler_func(self, sourceType, sourceIndex, x1, y1, z1, x2, y2, z2, hatx, haty):
     #print(x1, y1)
@@ -184,56 +195,76 @@ class handlers:
   def key_handler_func(self, sourceType, sourceIndex, key, value):
     #k = mykeys.read() # Read Keyboard inputs
     #print(key)
-    if key >-1:
-      if key == pi3d.event.Event.key_to_code('KEY_W'):#119:  #key z forward
-        self.z+=1
-        self.mv_run += math.fabs(self.avatar_speed*1/2)
-        self.mv_run_diff = 1
-        self.body_orientation = 180
-      elif key == pi3d.event.Event.key_to_code('KEY_S'): #115:  #kry s back
-        self.z+= -1
-        self.mv_run += math.fabs(self.avatar_speed*1/2)
-        self.mv_run_diff = 1
-        self.body_orientation = 0
-      elif key == pi3d.event.Event.key_to_code('KEY_A'): #97:   #key a left
-        self.x+= -1
-        self.mv_run += math.fabs(self.avatar_speed*1/2)
-        self.mv_run_diff = 1
-        self.body_orientation = 90
-      elif key == pi3d.event.Event.key_to_code('KEY_D'):#100:  #key d right
-        self.x+=1
-        self.mv_run += math.fabs(self.avatar_speed*1/2)
-        self.mv_run_diff = 1
-        self.body_orientation = 270
-      elif key == pi3d.event.Event.key_to_code('KEY_C'): #99:  #key c jump
+    orientation = 0
+    if self.mykeys.key_state("KEY_S"): #115:  #kry s back
+      self.z+= -1
+      self.mv_run += math.fabs(self.avatar_speed*1/2)
+      self.mv_run_diff = 1
+      orientation += 1
+      #self.body_orientation = 0
+    if self.mykeys.key_state("KEY_A"): #97:   #key a left
+      self.x+= -1
+      self.mv_run += math.fabs(self.avatar_speed*1/2)
+      self.mv_run_diff = 1
+      orientation += 2
+      #self.body_orientation = 90
+    if self.mykeys.key_state("KEY_W"): #pi3d.event.Event.key_to_code('KEY_W'):#119:  #key z forward
+      print("FRONT")
+      self.z+=1
+      self.mv_run += math.fabs(self.avatar_speed*1/2)
+      self.mv_run_diff = 1
+      orientation += 4
+      #self.body_orientation = 180
+    if self.mykeys.key_state("KEY_D"):#100:  #key d right
+      print("         RIGHT")
+      self.x+=1
+      self.mv_run += math.fabs(self.avatar_speed*1/2)
+      self.mv_run_diff = 1
+      orientation += 8
+      #self.body_orientation = 270
+    if self.mykeys.key_state("KEY_C"): #99:  #key c jump
         if not self.flag_jump:
           self.flag_jump = 25
-      elif key == pi3d.event.Event.key_to_code('KEY_V'): #118:  #key w cut
+    if self.mykeys.key_state("KEY_V"): #118:  #key cut
         self.flag_cut = 12
-        #print("eee")
-      elif key == pi3d.event.Event.key_to_code('KEY_O'): #111:  #key o
-        view = self.flag_view
-        self.flag_view = not view
-      elif key == pi3d.event.Event.key_to_code('KEY_P'): #112:  #key p picture
-        pi3d.screenshot("forestWalk" + str(scshots) + ".jpg")
+    if self.mykeys.key_state("KEY_O"): #111:  #key o
+        self.cpt_view += 1
+        if self.cpt_view == 2:
+          view = self.flag_view
+          self.flag_view = not view
+          self.cpt_view = 0
+    if self.mykeys.key_state("KEY_P"): #112:  #key p picture
+        pi3d.screenshot("BeYourHero" + str(scshots) + ".jpg")
         scshots += 1
-      elif key == 10:   #key RETURN
-        mc = 0
-      elif key == pi3d.event.Event.key_to_code('KEY_ESC'):  #Escape key to exit
+    if self.mykeys.key_state("KEY_ESC"):  #Escape key to exit
         print("***** EXIT *****")
         #os.system('xset r on')
 
         self.keep_running = False
 
-        #mykeys.close()
-        #if USE_SERIAL:
-        self.ser.stop()
+        #self.mykeys.release()
+        if self.USE_SERIAL:
+          self.ser.stop()
         #mymouse.stop()
         #DISPLAY.destroy()
         #DISPLAY.stop()
 
-      elif key == ord('f'):
-        roll = 1.0
+    if orientation == 1:
+      self.body_orientation = 0
+    elif orientation == 3:
+      self.body_orientation = 45
+    elif orientation == 2:
+      self.body_orientation = 90
+    elif orientation == 6:
+      self.body_orientation = 135
+    elif orientation == 4:
+      self.body_orientation = 180
+    elif orientation == 12:
+      self.body_orientation = 225
+    elif orientation == 8:
+      self.body_orientation = 270
+    elif orientation == 9:
+      self.body_orientation = 315
 
   def read_exit(self):
     return self.keep_running

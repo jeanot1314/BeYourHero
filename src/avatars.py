@@ -135,7 +135,7 @@ class lego(BaseAvatar):
     self.armR = pi3d.Model(file_string="../Blender/lego/Emmet_armR.obj", cy=-0.55, cx=0.15, cz=-0)
     self.armR.set_shader(shader)
 
-    self.armL = pi3d.Model(file_string="../Blender/lego/emmet_armL.obj", cy=-0.55, cx=-0.15, cz=-0)
+    self.armL = pi3d.Model(file_string="../Blender/lego/emmet_armL_sword.obj", cy=-0.55, cx=-0.15, cz=-0)
     self.armL.set_shader(shader)
 
     self.legL = pi3d.Model(file_string="../Blender/lego/Emmet_legL.obj", cy = -0.3)
@@ -175,6 +175,12 @@ class lego(BaseAvatar):
     self.head.rotateToY(0)
     self.head.rotateToX(0)
 
+  def cut(self, position):
+    #self.armL.rotateToZ(300)
+    self.armL.rotateToX(300+90.0 * math.sin(position/4)) # half a move
+    #self.armL.rotateToY(0+70.0 * math.sin(position/4)) # half a move
+
+
 class roshi(BaseAvatar):
 
   def __init__(self):
@@ -197,6 +203,22 @@ class goomba(BaseAvatar):
     self.center.set_shader(shader)
     #self.center.scale(0.1,0.1,0.1)
     self.center.scale(0.3,0.3,0.3)
+  def run(self, position, diff):
+    self.center.rotateToX(12.0 * math.sin(position*2))
+    self.center.rotateToZ(12.0 * math.sin(position*3))
+  def stand(self):
+    self.body.rotateToX(0)
+    self.body.rotateToZ(0)
+
+class toad(BaseAvatar):
+
+  def __init__(self):
+    super().__init__()
+    self.center = pi3d.Model(file_string="../Blender/toad/toad.obj")
+    shader = pi3d.Shader("uv_flat")
+    self.center.set_shader(shader)
+    #self.center.scale(0.1,0.1,0.1)
+    self.center.scale(0.03,0.03,0.03)
   def run(self, position, diff):
     self.center.rotateToX(12.0 * math.sin(position*2))
     self.center.rotateToZ(12.0 * math.sin(position*3))

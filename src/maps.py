@@ -37,6 +37,35 @@ class templeoftime(object):
   def update_pos(self, x, z):
    self.building.position(px, py, pz)
 
+class kokiri(object):
+
+  def __init__(self):
+    flatsh = pi3d.Shader("uv_flat")
+    self.building = pi3d.Model(file_string="../Blender/Map/kokiri/untitled.obj", sx=0.2, sy=0.2, sz=0.2)
+    self.building.set_shader(flatsh)
+
+  def draw(self):
+    self.building.draw()
+
+  def height(self, x, z):
+    global px, py, pz
+    if pz + 12 < z and pz + z < 160:
+      if px + -23 < x and x < px + 23 and pz + 77 < z and z < pz + 120:
+        return 6.4
+      else:
+        return 3.2
+    elif px + -11 < x and x < px + 12 and pz + -1 <= z:
+      return 3.2
+    elif px + -7 < x and x < px + 7 and pz + -8 < z and z < pz + -1:
+      return 4
+    elif px + -8 < x and x < px + 8 and pz + -67 < z and z < pz + -53:
+      return 1.6
+    else:
+      return 0
+
+  def update_pos(self, x, z):
+   self.building.position(px, py, pz)
+
 class forest(object):
 
   def __init__(self):
